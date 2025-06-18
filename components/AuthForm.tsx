@@ -17,6 +17,8 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createAccount, signInUser } from "@/lib/actions/user.actions";
+import OTPModal from "./OTPModal";
 
 
 type FormType = "sign-in" | "sign-up";
@@ -36,6 +38,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
 
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+    const [accountId, setAccountId] = useState(null);
+
 
     const formSchema = authFormSchema(type)
 
@@ -49,8 +53,22 @@ const AuthForm = ({ type }: { type: FormType }) => {
     })
 
     // 2. Define a submit handler.
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+        setLoading(true);
+        setErrorMessage("")
+        try {
+
+            const user = type === 'sign-up' ?
+            await createAccount({ fullName: values.fullName || "", email: values.email })
+            : await signInUser({email: values.email})
+            
+            setAccountId(user.accountId)
+        } catch (error) {
+            setErrorMessage("Failed to create account. Please try again.")
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -58,7 +76,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="auth-form flex items-center justify-center">
                     <h1 className="form-title ">
-                        {type === "sign-in" ? "Sign In" : "Sign Up"}
+                        {type === "sign-in" ? "LogIn" : "Sign Up"}
                     </h1>
                     {type === "sign-up" && (
                         <FormField
@@ -109,19 +127,21 @@ const AuthForm = ({ type }: { type: FormType }) => {
                     <Button
                         type="submit"
                         className="form-submit-button w-[150px] lg:w-[200px] flex items-center justify-center"
-                    // disabled={loading}
-                    > {type === "sign-up" ? "Sign Up" : "Sign in"}
-
-                        {loading && (
+                        disabled={loading}
+                    >
+                        {loading ? (
                             <Image
                                 src="/assets/icons/loader.svg"
-                                alt="loader"
+                                alt="Submitting…"      /* helps screen‑readers */
                                 width={24}
                                 height={24}
-                                className="ml-2 animate-spin"
+                                className="animate-spin"
                             />
+                        ) : (
+                            (type === "sign-up" ? "Sign Up" : "Sign In")
                         )}
                     </Button>
+
                     {errorMessage && <p className="error-message">*{errorMessage}</p>}
 
                     <div className="body-2 flex justify-center">
@@ -135,13 +155,14 @@ const AuthForm = ({ type }: { type: FormType }) => {
                             className="ml-1 font-medium text-brand"
                         >
                             {" "}
-                            {type === "sign-in" ? "Sign Up" : "Sign In"}
+                            {type === "sign-in" ? "Sign Up" : "Login"}
                         </Link>
                     </div>
                 </form>
             </Form>
 
             {/* OTP */}
+            {accountId && <OTPModal email={form.getValues("email")} accountId={accountId} />}
         </>
     )
 }
