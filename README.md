@@ -1,3 +1,3 @@
 # CoDrive
 <br>
-A Storage application platform
+CoDrive a Storage application platform
