@@ -12,7 +12,7 @@ interface Props {
   email: string;
 }
 
-const Sidebar = ({fullName, email, avatar} : Props) => {
+const Sidebar = ({fullName, email} : Props) => {
   const pathname = usePathname();
 
   return (

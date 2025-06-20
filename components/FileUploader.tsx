@@ -18,7 +18,6 @@ interface Props {
     accountId: string;
     ownerId: string;
     className?: string;
-
 }
 
 const FileUploader = ({ accountId, ownerId, className }: Props) => {
