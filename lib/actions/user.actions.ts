@@ -99,9 +99,9 @@ export const getCurrentUser = async () => {
      if(user.total <= 0) return null;
  
      return parseStringify(user.documents[0]);
-   } catch (error) {
-    console.log(error);
-      handleError(error, "Failed to get user");
+   } catch (err: any) {
+    if (err?.message === "No Session") return null;   // ⬅ swallow this case
+    throw err;
    }
 }
 
