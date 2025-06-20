@@ -11,8 +11,8 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: "CoDrive",
-  description: "CoDrive - The Storage Solution",
+  title: "StoreIt",
+  description: "StoreIt - The Storage Solution",
 };
 
 export default function RootLayout({

@@ -86,7 +86,8 @@ export const getCurrentUser = async () => {
 
    try {
      const {account, databases} = await createSessionClient();
- 
+
+
      const result = await account.get();
  
      const user = await databases.listDocuments(
@@ -112,7 +113,8 @@ export const signOutUser = async () => {
         (await cookies()).delete('appwrite-session');
     } catch (error) {
         console.log(error)
-        handleError(error, 'failde to logout user')
+        handleError(error, 'failde to logout user');
+
     }finally{
         redirect('/sign-in');
     }
